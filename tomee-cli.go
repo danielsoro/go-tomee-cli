@@ -1,32 +1,57 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
+	"path"
+	"strings"
 
 	"github.com/codegangsta/cli"
+	"github.com/termie/go-shutil"
 )
 
-func start(path string) {
+func start(path string) error {
 	cmd := exec.Command("sh", "-c", path+"/bin/startup.sh")
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return cmd.Run()
 }
 
-func stop(path string) {
+func stop(path string) error {
 	cmd := exec.Command("sh", "-c", path+"/bin/shutdown.sh")
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return cmd.Run()
 }
 
 func restart(path string) {
-	stop(path)
-	start(path)
+	err := stop(path)
+	if err != nil {
+		fmt.Println("TomEE isn't started...")
+	}
+
+	fmt.Printf("Starting server..")
+	err = start(path)
+	if err != nil {
+		fmt.Println("Error during start")
+		return
+	}
+
+	fmt.Println("TomEE started")
+}
+
+func deploy(tomeePath, packageForDeploy string) error {
+
+	_, packageName := path.Split(packageForDeploy)
+	deployPath := tomeePath + "/webapps/"
+	if strings.HasSuffix(packageForDeploy, ".ear") {
+		deployPath = tomeePath + "/apps/"
+	}
+
+	err := shutil.CopyFile(packageForDeploy, deployPath+packageName, true)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func createCommands() []cli.Command {
@@ -64,7 +89,20 @@ func createCommands() []cli.Command {
 		},
 	}
 
-	return []cli.Command{startCommand, stopCommand, restartCommand}
+	deployCommand := cli.Command{
+		Name:  "deploy",
+		Usage: "deploy war/ear in TomEE",
+		Flags: []cli.Flag{pathFlag},
+		Action: func(c *cli.Context) {
+			err := deploy(c.String("path"), c.Args().First())
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("Deployed in: " + c.String("path"))
+		},
+	}
+
+	return []cli.Command{startCommand, stopCommand, restartCommand, deployCommand}
 }
 
 func main() {
