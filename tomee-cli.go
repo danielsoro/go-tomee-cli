@@ -44,6 +44,7 @@ func deploy(tomeePath, packageForDeploy string) error {
 	deployPath := tomeePath + "/webapps/"
 	if strings.HasSuffix(packageForDeploy, ".ear") {
 		deployPath = tomeePath + "/apps/"
+		os.Mkdir(deployPath, 0744)
 	}
 
 	err := shutil.CopyFile(packageForDeploy, deployPath+packageName, true)
