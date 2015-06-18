@@ -38,6 +38,26 @@ func restart(path string) {
 	fmt.Println("TomEE started")
 }
 
+func undeploy(tomeePath, packageForUndeploy string) error {
+	_, packageName := path.Split(packageForUndeploy)
+	deployPath := tomeePath + "/webapps/"
+	if strings.HasSuffix(packageForUndeploy, ".ear") {
+		deployPath = tomeePath + "/apps"
+	}
+
+	err := os.RemoveAll(deployPath + packageName)
+	if err != nil {
+		return err
+	}
+
+	err = os.RemoveAll(deployPath + strings.TrimSuffix(packageName, path.Ext(packageName)))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func deploy(tomeePath, packageForDeploy string) error {
 	_, packageName := path.Split(packageForDeploy)
 	deployPath := tomeePath + "/webapps/"
@@ -88,6 +108,19 @@ func createCommands() []cli.Command {
 		},
 	}
 
+	undeployCommand := cli.Command{
+		Name:  "undeploy",
+		Usage: "undeploy war/ear in TomEE",
+		Flags: []cli.Flag{pathFlag},
+		Action: func(c *cli.Context) {
+			err := undeploy(c.String("path"), c.Args().First())
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("Undeploy in: " + c.String("path"))
+		},
+	}
+
 	deployCommand := cli.Command{
 		Name:  "deploy",
 		Usage: "deploy war/ear in TomEE",
@@ -101,7 +134,7 @@ func createCommands() []cli.Command {
 		},
 	}
 
-	return []cli.Command{startCommand, stopCommand, restartCommand, deployCommand}
+	return []cli.Command{startCommand, stopCommand, restartCommand, deployCommand, undeployCommand}
 }
 
 func main() {
