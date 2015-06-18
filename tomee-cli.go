@@ -39,7 +39,6 @@ func restart(path string) {
 }
 
 func deploy(tomeePath, packageForDeploy string) error {
-
 	_, packageName := path.Split(packageForDeploy)
 	deployPath := tomeePath + "/webapps/"
 	if strings.HasSuffix(packageForDeploy, ".ear") {
@@ -56,7 +55,6 @@ func deploy(tomeePath, packageForDeploy string) error {
 }
 
 func createCommands() []cli.Command {
-
 	pathFlag := cli.StringFlag{
 		Name:   "path",
 		Usage:  "path of the TomEE server. Default value: $TOMEE_HOME",
@@ -109,6 +107,7 @@ func createCommands() []cli.Command {
 func main() {
 	app := cli.NewApp()
 	app.Name = "tomee-cli"
+	app.Usage = "Command line tool helps system administrators and developers to manage a instance of TomEE server."
 	app.Version = "1.0.0"
 	app.Commands = createCommands()
 	app.Run(os.Args)
