@@ -12,13 +12,13 @@ import (
 	"github.com/termie/go-shutil"
 )
 
-func start(path string) error {
-	cmd := exec.Command("sh", "-c", path+"/bin/startup.sh")
+func start(tomeePath string) error {
+	cmd := exec.Command("sh", "-c", path.Join(tomeePath, "bin", "startup.sh"))
 	return cmd.Run()
 }
 
-func stop(path string) error {
-	cmd := exec.Command("sh", "-c", path+"/bin/shutdown.sh")
+func stop(tomeePath string) error {
+	cmd := exec.Command("sh", "-c", path.Join(tomeePath, "bin", "shutdown.sh"))
 	return cmd.Run()
 }
 
@@ -40,17 +40,17 @@ func restart(path string) {
 
 func undeploy(tomeePath, packageForUndeploy string) error {
 	_, packageName := path.Split(packageForUndeploy)
-	deployPath := tomeePath + "/webapps/"
+	deployPath := path.Join(tomeePath, "webapps")
 	if strings.HasSuffix(packageForUndeploy, ".ear") {
-		deployPath = tomeePath + "/apps"
+		deployPath = path.Join(tomeePath, "apps")
 	}
 
-	err := os.RemoveAll(deployPath + packageName)
+	err := os.RemoveAll(path.Join(deployPath, packageName))
 	if err != nil {
 		return err
 	}
 
-	err = os.RemoveAll(deployPath + strings.TrimSuffix(packageName, path.Ext(packageName)))
+	err = os.RemoveAll(path.Join(deployPath, strings.TrimSuffix(packageName, path.Ext(packageName))))
 	if err != nil {
 		return err
 	}
@@ -60,13 +60,13 @@ func undeploy(tomeePath, packageForUndeploy string) error {
 
 func deploy(tomeePath, packageForDeploy string) error {
 	_, packageName := path.Split(packageForDeploy)
-	deployPath := tomeePath + "/webapps/"
+	deployPath := path.Join(tomeePath, "webapps")
 	if strings.HasSuffix(packageForDeploy, ".ear") {
-		deployPath = tomeePath + "/apps/"
+		deployPath = path.Join(tomeePath, "apps")
 		os.Mkdir(deployPath, 0744)
 	}
 
-	err := shutil.CopyFile(packageForDeploy, deployPath+packageName, true)
+	err := shutil.CopyFile(packageForDeploy, path.Join(deployPath, packageName), true)
 	if err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func createCommands() []cli.Command {
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Println("Undeploy in: " + c.String("path"))
+			fmt.Println("Undeployed in: " + c.String("path"))
 		},
 	}
 
