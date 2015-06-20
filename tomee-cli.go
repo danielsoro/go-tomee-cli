@@ -38,19 +38,25 @@ func restart(path string) {
 	fmt.Println("TomEE started")
 }
 
-func undeploy(tomeePath, packageForUndeploy string) error {
-	_, packageName := path.Split(packageForUndeploy)
-	deployPath := path.Join(tomeePath, "webapps")
-	if strings.HasSuffix(packageForUndeploy, ".ear") {
+func deployDir(tomeePath, packageName string) (deployPath, pkgName string) {
+	_, pkgName = path.Split(packageName)
+	deployPath = path.Join(tomeePath, "webapps")
+	if strings.HasSuffix(pkgName, ".ear") {
 		deployPath = path.Join(tomeePath, "apps")
+		os.Mkdir(deployPath, 0744)
 	}
+	return
+}
 
-	err := os.RemoveAll(path.Join(deployPath, packageName))
+func undeploy(tomeePath, packageForUndeploy string) error {
+	deployPath, pkgName := deployDir(tomeePath, packageForUndeploy)
+
+	err := os.RemoveAll(path.Join(deployPath, pkgName))
 	if err != nil {
 		return err
 	}
 
-	err = os.RemoveAll(path.Join(deployPath, strings.TrimSuffix(packageName, path.Ext(packageName))))
+	err = os.RemoveAll(path.Join(deployPath, strings.TrimSuffix(pkgName, path.Ext(pkgName))))
 	if err != nil {
 		return err
 	}
@@ -59,14 +65,9 @@ func undeploy(tomeePath, packageForUndeploy string) error {
 }
 
 func deploy(tomeePath, packageForDeploy string) error {
-	_, packageName := path.Split(packageForDeploy)
-	deployPath := path.Join(tomeePath, "webapps")
-	if strings.HasSuffix(packageForDeploy, ".ear") {
-		deployPath = path.Join(tomeePath, "apps")
-		os.Mkdir(deployPath, 0744)
-	}
+	deployPath, pkgName := deployDir(tomeePath, packageForDeploy)
 
-	err := shutil.CopyFile(packageForDeploy, path.Join(deployPath, packageName), true)
+	err := shutil.CopyFile(packageForDeploy, path.Join(deployPath, pkgName), true)
 	if err != nil {
 		return err
 	}
