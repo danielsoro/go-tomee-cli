@@ -6,10 +6,9 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"strings"
 
 	"github.com/codegangsta/cli"
-	"github.com/termie/go-shutil"
+	"github.com/danielsoro/tomee-cli/deployment"
 )
 
 func start(tomeePath string) error {
@@ -36,43 +35,6 @@ func restart(path string) {
 	}
 
 	fmt.Println("TomEE started")
-}
-
-func deployDir(tomeePath, packageName string) (deployPath, pkgName string) {
-	_, pkgName = path.Split(packageName)
-	deployPath = path.Join(tomeePath, "webapps")
-	if strings.HasSuffix(pkgName, ".ear") {
-		deployPath = path.Join(tomeePath, "apps")
-		os.Mkdir(deployPath, 0744)
-	}
-	return
-}
-
-func undeploy(tomeePath, packageForUndeploy string) error {
-	deployPath, pkgName := deployDir(tomeePath, packageForUndeploy)
-
-	err := os.RemoveAll(path.Join(deployPath, pkgName))
-	if err != nil {
-		return err
-	}
-
-	err = os.RemoveAll(path.Join(deployPath, strings.TrimSuffix(pkgName, path.Ext(pkgName))))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func deploy(tomeePath, packageForDeploy string) error {
-	deployPath, pkgName := deployDir(tomeePath, packageForDeploy)
-
-	err := shutil.CopyFile(packageForDeploy, path.Join(deployPath, pkgName), true)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func createCommands() []cli.Command {
@@ -114,7 +76,7 @@ func createCommands() []cli.Command {
 		Usage: "undeploy war/ear in TomEE",
 		Flags: []cli.Flag{pathFlag},
 		Action: func(c *cli.Context) {
-			err := undeploy(c.String("path"), c.Args().First())
+			err := deployment.Undeploy(c.String("path"), c.Args().First())
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -127,7 +89,7 @@ func createCommands() []cli.Command {
 		Usage: "deploy war/ear in TomEE",
 		Flags: []cli.Flag{pathFlag},
 		Action: func(c *cli.Context) {
-			err := deploy(c.String("path"), c.Args().First())
+			err := deployment.Deploy(c.String("path"), c.Args().First())
 			if err != nil {
 				log.Fatal(err)
 			}
