@@ -16,3 +16,14 @@ This command line tool helps system administrators and developers to manage a in
 
     tomee-cli restart --path [path-to-tomee]    // Without TOMEE_HOME variable defined.
     tomee-cli restart                           // With TOMEE_HOME variable defined.
+
+
+### Deploy application:
+
+    tomee-cli deploy --path [path-to-tomee] [path-to-war/ear-file]
+    tomee-cli deploy [path-to-war/ear-file]
+
+### Undeploy application:
+
+    tomee-cli undeploy --path [path-to-tomee] [war/ear-file]
+    tomee-cli undeploy [war/ear-file]
