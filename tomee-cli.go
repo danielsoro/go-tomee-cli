@@ -4,38 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"path"
 
 	"github.com/codegangsta/cli"
 	"github.com/danielsoro/tomee-cli/deployment"
+	"github.com/danielsoro/tomee-cli/execution"
 )
-
-func start(tomeePath string) error {
-	cmd := exec.Command("sh", "-c", path.Join(tomeePath, "bin", "startup.sh"))
-	return cmd.Run()
-}
-
-func stop(tomeePath string) error {
-	cmd := exec.Command("sh", "-c", path.Join(tomeePath, "bin", "shutdown.sh"))
-	return cmd.Run()
-}
-
-func restart(path string) {
-	err := stop(path)
-	if err != nil {
-		fmt.Println("TomEE isn't started...")
-	}
-
-	fmt.Printf("Starting server..")
-	err = start(path)
-	if err != nil {
-		fmt.Println("Error during start")
-		return
-	}
-
-	fmt.Println("TomEE started")
-}
 
 func createCommands() []cli.Command {
 	pathFlag := cli.StringFlag{
@@ -49,7 +22,7 @@ func createCommands() []cli.Command {
 		Usage: "start the TomEE server",
 		Flags: []cli.Flag{pathFlag},
 		Action: func(c *cli.Context) {
-			start(c.String("path"))
+			execution.CreateExecution().Start(c.String("path"))
 		},
 	}
 
@@ -58,7 +31,7 @@ func createCommands() []cli.Command {
 		Usage: "stop the TomEE server",
 		Flags: []cli.Flag{pathFlag},
 		Action: func(c *cli.Context) {
-			stop(c.String("path"))
+			execution.CreateExecution().Stop(c.String("path"))
 		},
 	}
 
@@ -67,7 +40,7 @@ func createCommands() []cli.Command {
 		Usage: "restart the TomEE server",
 		Flags: []cli.Flag{pathFlag},
 		Action: func(c *cli.Context) {
-			restart(c.String("path"))
+			execution.CreateExecution().Restart(c.String("path"))
 		},
 	}
 
