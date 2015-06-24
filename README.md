@@ -4,13 +4,13 @@ This command line tool helps system administrators and developers to manage a in
 
 ### Start server:
 
-    tomee-cli start --path [path-to-tomee]    // Without TOMEE_HOME variable defined.
-    tomee-cli start                           // With TOMEE_HOME variable defined.
+    tomee-cli start --path [path-to-tomee]      // Without TOMEE_HOME variable defined.
+    tomee-cli start                             // With TOMEE_HOME variable defined.
 
 ### Stop server:
 
-    tomee-cli stop --path [path-to-tomee]    // Without TOMEE_HOME variable defined.
-    tomee-cli stop                           // With TOMEE_HOME variable defined.
+    tomee-cli stop --path [path-to-tomee]       // Without TOMEE_HOME variable defined.
+    tomee-cli stop                              // With TOMEE_HOME variable defined.
 
 ### Restart server:
 
