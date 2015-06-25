@@ -1,11 +1,6 @@
 package execution
 
-import (
-	"runtime"
-
-	"github.com/danielsoro/tomee-cli/execution/unix"
-	"github.com/danielsoro/tomee-cli/execution/windows"
-)
+import "fmt"
 
 type Execution interface {
 	Start(tomeePath string) error
@@ -13,11 +8,18 @@ type Execution interface {
 	Restart(tomeePath string)
 }
 
-func CreateExecution() Execution {
-	switch runtime.GOOS {
-	case "windows":
-		return new(windows.Windows)
-	default:
-		return new(unix.Unix)
+func Restart(e Execution, tomeePath string) {
+	err := e.Stop(tomeePath)
+	if err != nil {
+		fmt.Println("TomEE isn'type started...")
 	}
+
+	fmt.Printf("Starting server..")
+	err = e.Start(tomeePath)
+	if err != nil {
+		fmt.Println("Error during start")
+		return
+	}
+
+	fmt.Println("TomEE started")
 }

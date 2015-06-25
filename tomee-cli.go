@@ -4,13 +4,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 
 	"github.com/codegangsta/cli"
 	"github.com/danielsoro/tomee-cli/deployment"
-	"github.com/danielsoro/tomee-cli/execution"
+	"github.com/danielsoro/tomee-cli/factory"
 )
 
 func createCommands() []cli.Command {
+	execution := factory.ExecutionFactory(runtime.GOOS)
+
 	pathFlag := cli.StringFlag{
 		Name:   "path",
 		Usage:  "path of the TomEE server. Default value: $TOMEE_HOME",
@@ -22,7 +25,7 @@ func createCommands() []cli.Command {
 		Usage: "start the TomEE server",
 		Flags: []cli.Flag{pathFlag},
 		Action: func(c *cli.Context) {
-			execution.CreateExecution().Start(c.String("path"))
+			execution.Start(c.String("path"))
 		},
 	}
 
@@ -31,7 +34,7 @@ func createCommands() []cli.Command {
 		Usage: "stop the TomEE server",
 		Flags: []cli.Flag{pathFlag},
 		Action: func(c *cli.Context) {
-			execution.CreateExecution().Stop(c.String("path"))
+			execution.Stop(c.String("path"))
 		},
 	}
 
@@ -40,7 +43,7 @@ func createCommands() []cli.Command {
 		Usage: "restart the TomEE server",
 		Flags: []cli.Flag{pathFlag},
 		Action: func(c *cli.Context) {
-			execution.CreateExecution().Restart(c.String("path"))
+			execution.Restart(c.String("path"))
 		},
 	}
 
