@@ -1,9 +1,10 @@
 package unix
 
 import (
-	"fmt"
 	"os/exec"
 	"path"
+
+	"github.com/danielsoro/tomee-cli/execution"
 )
 
 type Unix struct {
@@ -19,18 +20,6 @@ func (u Unix) Stop(tomeePath string) error {
 	return cmd.Run()
 }
 
-func (u Unix) Restart(path string) {
-	err := u.Stop(path)
-	if err != nil {
-		fmt.Println("TomEE isn't started...")
-	}
-
-	fmt.Printf("Starting server..")
-	err = u.Start(path)
-	if err != nil {
-		fmt.Println("Error during start")
-		return
-	}
-
-	fmt.Println("TomEE started")
+func (u Unix) Restart(tomeePath string) {
+	execution.Restart(u, tomeePath)
 }

@@ -1,9 +1,10 @@
 package windows
 
 import (
-	"fmt"
 	"os/exec"
 	"path"
+
+	"github.com/danielsoro/tomee-cli/execution"
 )
 
 type Windows struct {
@@ -20,17 +21,5 @@ func (w Windows) Stop(tomeePath string) error {
 }
 
 func (w Windows) Restart(tomeePath string) {
-	err := w.Stop(tomeePath)
-	if err != nil {
-		fmt.Println("TomEE isn't started...")
-	}
-
-	fmt.Printf("Starting server..")
-	err = w.Start(tomeePath)
-	if err != nil {
-		fmt.Println("Error during start")
-		return
-	}
-
-	fmt.Println("TomEE started")
+	execution.Restart(w, tomeePath)
 }
