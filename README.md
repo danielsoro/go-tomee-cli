@@ -27,8 +27,8 @@ This command line tool helps system administrators and developers to manage a in
 
     tomee-cli undeploy --path [path-to-tomee] [war/ear-file]
     tomee-cli undeploy [war/ear-file]
-    
-    
+
+
 ## License
 
 Copyright 2015 Daniel Cunha (soro) and/or its affiliates and other contributors as indicated by the @authors tag. All rights reserved.
