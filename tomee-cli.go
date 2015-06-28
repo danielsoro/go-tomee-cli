@@ -9,6 +9,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/danielsoro/tomee-cli/deployment"
 	"github.com/danielsoro/tomee-cli/factory"
+	"github.com/danielsoro/tomee-cli/install"
 )
 
 func createCommands() []cli.Command {
@@ -18,6 +19,11 @@ func createCommands() []cli.Command {
 		Name:   "path",
 		Usage:  "path of the TomEE server. Default value: $TOMEE_HOME",
 		EnvVar: "TOMEE_HOME",
+	}
+
+	profileFlag := cli.StringFlag{
+		Name:   "profile",
+		Usage:  "profile for the TomEE server. Default value: 'webprofile'",
 	}
 
 	startCommand := cli.Command{
@@ -73,7 +79,20 @@ func createCommands() []cli.Command {
 		},
 	}
 
-	return []cli.Command{startCommand, stopCommand, restartCommand, deployCommand, undeployCommand}
+	installCommand := cli.Command{
+		Name:  "install",
+		Usage: "install a version of TomEE profile",
+		Flags: []cli.Flag{pathFlag, profileFlag},
+		Action: func(c *cli.Context) {
+			err := 	install.Install(c.String("path"), c.String("profile"), c.Args()[0])
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("Installed in: " + c.String("path"))
+		},
+	}
+
+	return []cli.Command{startCommand, stopCommand, restartCommand, deployCommand, undeployCommand, installCommand}
 }
 
 func main() {
