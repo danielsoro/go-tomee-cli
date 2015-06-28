@@ -1,5 +1,5 @@
 // Package install provide features to download and install profiles
-package util
+package zip
 
 import (
 	"archive/zip"
@@ -9,6 +9,7 @@ import (
 )
 
 // Unpack the file to a destine folder, deleteAfterUnzip can be used to exclude the original file after the process
+// Adapted from http://stackoverflow.com/questions/20357223/easy-way-to-unzip-file-with-golang
 func Unzip(src, dest string, deleteAfterUnzip bool) error {
     r, err := zip.OpenReader(src)
     if err != nil {
