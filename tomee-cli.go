@@ -22,8 +22,13 @@ func createCommands() []cli.Command {
 	}
 
 	profileFlag := cli.StringFlag{
-		Name:   "profile",
-		Usage:  "profile for the TomEE server. Default value: 'webprofile'",
+		Name:  "profile",
+		Usage: "profile for the TomEE server.",
+	}
+
+	versionFlag := cli.StringFlag{
+		Name:  "version",
+		Usage: "version for the TomEE server.",
 	}
 
 	startCommand := cli.Command{
@@ -82,9 +87,9 @@ func createCommands() []cli.Command {
 	installCommand := cli.Command{
 		Name:  "install",
 		Usage: "install a version of TomEE profile",
-		Flags: []cli.Flag{pathFlag, profileFlag},
+		Flags: []cli.Flag{pathFlag, profileFlag, versionFlag},
 		Action: func(c *cli.Context) {
-			err := 	install.Install(c.String("path"), c.String("profile"), c.Args()[0])
+			err := install.Install(c.String("path"), c.String("profile"), c.String("version"))
 			if err != nil {
 				log.Fatal(err)
 			}

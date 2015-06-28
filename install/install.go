@@ -104,7 +104,7 @@ func downloadArchive(tomeePath string, archiveURL string) (string, error) {
 		return "", err
 	}
 
-	fmt.Printf("\nDownloaded %s with %d\n", archiveURLSlice[len(archiveURLSlice)-1], response.ContentLength)
+	fmt.Printf("\nDownloaded %s with %d bytes\n", archiveURLSlice[len(archiveURLSlice)-1], response.ContentLength)
 
 	return filepath, nil
 }
