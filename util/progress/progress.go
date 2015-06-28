@@ -1,4 +1,6 @@
-package util
+// Package responsable for tracking the percentual value of IO operations
+// Based on http://stackoverflow.com/questions/22421375/how-to-print-the-bytes-while-the-file-is-being-downloaded-golang
+package progress
 
 import (
     "fmt"

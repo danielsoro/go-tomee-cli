@@ -3,32 +3,33 @@ package install
 
 import (
 	"fmt"
-	"strings"
-	"regexp"
-	"path/filepath"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
-    "runtime"
-	"io"
-   	"io/ioutil"
+	"path/filepath"
+	"regexp"
+	"runtime"
+	"strings"
 
 	progress "github.com/danielsoro/tomee-cli/util/progress"
 	zip "github.com/danielsoro/tomee-cli/util/zip"
 )
 
 // Install an specif version of a profile in an path
-func Install(tomeePath, dist string, version string) error {	
+func Install(tomeePath, dist string, version string) error {
 	archiveURL, error := fetchArchiveURL(dist, version)
 
 	if error == nil {
-		filename, error := downloadArchive(tomeePath, archiveURL) 
-		
-		if error == nil{
+		filename, error := downloadArchive(tomeePath, archiveURL)
+
+		if error == nil {
 			unzipArchive(tomeePath, filename)
-            
-            if error == nil {
-                filepath.Walk(strings.TrimSuffix(filename, ".zip"), grantPermition)
-            } else {}
+
+			if error == nil {
+				filepath.Walk(strings.TrimSuffix(filename, ".zip"), grantPermition)
+			} else {
+			}
 		} else {
 			return error
 		}
@@ -69,7 +70,7 @@ func fetchArchiveURL(dist string, version string) (string, error) {
 
 // Parses the HTML body seeking the mirror link
 func findArchiveURLFromHTMLBody(htmlBody string, projectPathURL string) string {
-    // Retrieve the first occurence for the mirror link
+	// Retrieve the first occurence for the mirror link
 	archiveURLRegex := "(https?://)?([0-9a-z.-]+)\\.([a-z.]{2,6})([\\/\\w.-]*)" + projectPathURL
 	re := regexp.MustCompile(archiveURLRegex)
 	archiveURL := re.FindString(htmlBody)
@@ -77,14 +78,14 @@ func findArchiveURLFromHTMLBody(htmlBody string, projectPathURL string) string {
 }
 
 // Download from the specified URL to the path informed in the path flag
-func downloadArchive(tomeePath string, archiveURL string) (string,error) {
+func downloadArchive(tomeePath string, archiveURL string) (string, error) {
 	archiveURLSlice := strings.Split(archiveURL, "/")
 	filepath := filepath.Join(tomeePath, archiveURLSlice[len(archiveURLSlice)-1])
 
 	out, err := os.Create(filepath)
 	defer out.Close()
 	if err != nil {
-		fmt.Println(fmt.Sprint(err) )
+		fmt.Println(fmt.Sprint(err))
 		panic(err)
 		return "", err
 	}
@@ -97,37 +98,37 @@ func downloadArchive(tomeePath string, archiveURL string) (string,error) {
 		return "", err
 	}
 
-	_, er := io.Copy(out, &progress.ProgressLoader{Reader: response.Body, Length: response.ContentLength, Filepath: filepath})
+	_, er := io.Copy(out, &progress.ProgressLoader{Reader: response.Body, Length: response.ContentLength, Filepath: archiveURL})
 	if er != nil {
 		panic(err)
 		return "", err
 	}
 
-    fmt.Printf("\nDownloaded %s with %d\n", archiveURLSlice[len(archiveURLSlice)-1], response.ContentLength)
-    
+	fmt.Printf("\nDownloaded %s with %d\n", archiveURLSlice[len(archiveURLSlice)-1], response.ContentLength)
+
 	return filepath, nil
 }
 
 // Unpack the archive to the specified folder
 func unzipArchive(tomeePath string, filename string) {
-    zip.Unzip(filename, tomeePath, true)
+	zip.Unzip(filename, tomeePath, true)
 }
 
 // Scans the bin directory, looking for executable files, and gives execution permission for them.
 func grantPermition(path string, f os.FileInfo, err error) error {
-    var extension string
-    if runtime.GOOS == "windows" {
-        extension = ".exe"
-    } else {
-        extension = ".sh"
-    }
-    
-    if strings.HasSuffix(path, extension) {
-       err:= os.Chmod(path, 755)
-       if err != nil {
-           panic(err)
-           return err 
-       }	   
-    }
-   return nil
+	var extension string
+	if runtime.GOOS == "windows" {
+		extension = ".exe"
+	} else {
+		extension = ".sh"
+	}
+
+	if strings.HasSuffix(path, extension) {
+		err := os.Chmod(path, 755)
+		if err != nil {
+			panic(err)
+			return err
+		}
+	}
+	return nil
 }
