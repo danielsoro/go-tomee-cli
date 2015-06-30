@@ -12,8 +12,8 @@ import (
 	"runtime"
 	"strings"
 
-	progress "github.com/danielsoro/tomee-cli/util/progress"
-	zip "github.com/danielsoro/tomee-cli/util/zip"
+	"github.com/danielsoro/tomee-cli/util/progress"
+	"github.com/danielsoro/tomee-cli/util/zip"
 )
 
 // Install an specif version of a profile in an path
