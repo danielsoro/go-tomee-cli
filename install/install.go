@@ -18,38 +18,39 @@ import (
 
 // Install an specif version of a profile in an path
 func Install(tomeePath, dist string, version string) error {
-	archiveURL, error := fetchArchiveURL(dist, version)
+	archiveURL, err := fetchArchiveURL(dist, version)
+	if err != nil {
+		return err
+	}
 
-	if error == nil {
-		filename, error := downloadArchive(tomeePath, archiveURL)
+	filename, err := downloadArchive(tomeePath, archiveURL)
+	if err != nil {
+		return err
+	}
 
-		if error == nil {
-			unzipArchive(tomeePath, filename)
-
-			if error == nil {
-				filepath.Walk(strings.TrimSuffix(filename, ".zip"), grantPermition)
-			} else {
-			}
-		} else {
-			return error
-		}
-	} else {
-		return error
+	unzipArchive(tomeePath, filename)
+	err = filepath.Walk(strings.TrimSuffix(filename, ".zip"), grantPermition)
+	if err != nil {
+		return err
 	}
 	return nil
 }
 
 // Performs a GET request and return the content in []byte
 func getFromURL(url string) ([]byte, error) {
-	response, error := http.Get(url)
+	response, err := http.Get(url)
 	var b []byte
-	if error == nil {
-		b, error = ioutil.ReadAll(response.Body)
-		response.Body.Close()
-		return b, nil
-	} else {
-		return nil, error
+	if err != nil {
+		return nil, err
 	}
+
+	b, err = ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	response.Body.Close()
+	return b, nil
 }
 
 // Find the correct URL mirror for the archive
@@ -57,15 +58,14 @@ func fetchArchiveURL(dist string, version string) (string, error) {
 	var archiveURL string
 	projectPathURL := fmt.Sprintf("/tomee/tomee-%s/apache-tomee-%s-%s.zip", version, version, dist)
 	profileMirrorURL := fmt.Sprintf("http://www.apache.org/dyn/closer.cgi/%s", projectPathURL)
+	htmlBody, err := getFromURL(profileMirrorURL)
 
-	htmlBody, error := getFromURL(profileMirrorURL)
-
-	if error == nil {
-		archiveURL = findArchiveURLFromHTMLBody(string(htmlBody), projectPathURL)
-		return archiveURL, nil
-	} else {
-		return "", error
+	if err != nil {
+		return "", err
 	}
+
+	archiveURL = findArchiveURLFromHTMLBody(string(htmlBody), projectPathURL)
+	return archiveURL, nil
 }
 
 // Parses the HTML body seeking the mirror link
