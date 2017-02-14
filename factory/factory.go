@@ -1,9 +1,9 @@
 package factory
 
 import (
-	"github.com/danielsoro/tomee-cli/execution"
-	"github.com/danielsoro/tomee-cli/execution/unix"
-	"github.com/danielsoro/tomee-cli/execution/windows"
+	"github.com/danielsoro/go-tomee-cli/execution"
+	"github.com/danielsoro/go-tomee-cli/execution/unix"
+	"github.com/danielsoro/go-tomee-cli/execution/windows"
 )
 
 func ExecutionFactory(os string) execution.Execution {

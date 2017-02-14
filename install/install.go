@@ -1,4 +1,3 @@
-// Package install provide features to download and install profiles
 package install
 
 import (
@@ -12,11 +11,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/danielsoro/tomee-cli/util/progress"
-	"github.com/danielsoro/tomee-cli/util/zip"
+	"github.com/danielsoro/go-tomee-cli/util/progress"
+	"github.com/danielsoro/go-tomee-cli/util/zip"
 )
 
-// Install an specif version of a profile in an path
 func Install(tomeePath, dist string, version string) error {
 	archiveURL, err := fetchArchiveURL(dist, version)
 	if err != nil {
@@ -36,7 +34,6 @@ func Install(tomeePath, dist string, version string) error {
 	return nil
 }
 
-// Performs a GET request and return the content in []byte
 func getFromURL(url string) ([]byte, error) {
 	response, err := http.Get(url)
 	var b []byte
@@ -53,7 +50,6 @@ func getFromURL(url string) ([]byte, error) {
 	return b, nil
 }
 
-// Find the correct URL mirror for the archive
 func fetchArchiveURL(dist string, version string) (string, error) {
 	var archiveURL string
 	projectPathURL := fmt.Sprintf("/tomee/tomee-%s/apache-tomee-%s-%s.zip", version, version, dist)
@@ -68,16 +64,13 @@ func fetchArchiveURL(dist string, version string) (string, error) {
 	return archiveURL, nil
 }
 
-// Parses the HTML body seeking the mirror link
 func findArchiveURLFromHTMLBody(htmlBody string, projectPathURL string) string {
-	// Retrieve the first occurence for the mirror link
 	archiveURLRegex := "(https?://)?([0-9a-z.-]+)\\.([a-z.]{2,6})([\\/\\w.-]*)" + projectPathURL
 	re := regexp.MustCompile(archiveURLRegex)
 	archiveURL := re.FindString(htmlBody)
 	return archiveURL
 }
 
-// Download from the specified URL to the path informed in the path flag
 func downloadArchive(tomeePath string, archiveURL string) (string, error) {
 	archiveURLSlice := strings.Split(archiveURL, "/")
 	filepath := filepath.Join(tomeePath, archiveURLSlice[len(archiveURLSlice)-1])
@@ -109,12 +102,10 @@ func downloadArchive(tomeePath string, archiveURL string) (string, error) {
 	return filepath, nil
 }
 
-// Unpack the archive to the specified folder
 func unzipArchive(tomeePath string, filename string) {
 	zip.Unzip(filename, tomeePath, true)
 }
 
-// Scans the bin directory, looking for executable files, and gives execution permission for them.
 func grantPermition(path string, f os.FileInfo, err error) error {
 	var extension string
 	if runtime.GOOS == "windows" {

@@ -7,9 +7,9 @@ import (
 	"runtime"
 
 	"github.com/codegangsta/cli"
-	"github.com/danielsoro/tomee-cli/deployment"
-	"github.com/danielsoro/tomee-cli/factory"
-	"github.com/danielsoro/tomee-cli/install"
+	"github.com/danielsoro/go-tomee-cli/deployment"
+	"github.com/danielsoro/go-tomee-cli/factory"
+	"github.com/danielsoro/go-tomee-cli/install"
 )
 
 func createCommands() []cli.Command {

@@ -4,7 +4,7 @@ import (
 	"os/exec"
 	"path"
 
-	"github.com/danielsoro/tomee-cli/execution"
+	"github.com/danielsoro/go-tomee-cli/execution"
 )
 
 type Unix struct {
